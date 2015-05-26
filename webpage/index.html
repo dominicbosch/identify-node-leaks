@@ -1,0 +1,98 @@
+<html>
+<head>
+	<script type="text/javascript" src="js/socket.io-1.3.5.js"></script>
+	<script type="text/javascript" src="js/d3.v3.min.js"></script>
+	<script type="text/javascript" src="js/dimple.v2.1.2.min.js"></script>
+</head>
+<body>
+	<div id="chartContainer"></div>
+	<script type="text/javascript">
+		var arrData, x, y, chart, svg, socket, isInit = true;
+		
+		arrData = [];
+		// svg = dimple.chart( '#chartContainer', arrData );
+		svg = dimple.newSvg( '#chartContainer', '100%', '100%' );
+
+		window.onresize = function () {
+			if( chart ) chart.draw( 0, true );
+		};
+		
+		socket = io();
+		socket.on( 'connection', function(socket) {
+			console.log('connected');
+		});
+		socket.on( 'init', function( o ) {
+			arrData = [];
+			// isInit = o.num;
+		});
+		socket.on( 'endinit', function() {
+			isInit = null;
+			if( chart ) chart.draw();
+		});
+		socket.on( 'memusage', function( o ) {
+			arrData.push({
+				category: o.category,
+				timestamp: o.timestamp,
+				memory: o.rss,
+				type: 'rss'
+			});
+			arrData.push({
+				category: o.category,
+				timestamp: o.timestamp,
+				memory: o.heapUsed,
+				type: 'heapUsed'
+			});
+			arrData.push({
+				category: o.category,
+				timestamp: o.timestamp,
+				memory: o.heapTotal,
+				type: 'heapTotal'
+			});
+			
+			if( !chart ) {
+				chart = new dimple.chart( svg, arrData );
+				// chart.setBounds( 60, 30, 505, 305 );
+                chart.setMargins("60px", "30px", "110px", "70px");
+
+				// x.addOrderRule("Date");
+				x = chart.addTimeAxis( 'x', 'timestamp' );
+				x.tickFormat = '%b %e %H:%M';
+				x.title = 'Time';
+
+				y = chart.addMeasureAxis( 'y', 'memory' );
+				// chart.addColorAxis( 'rss', ["green", "yellow", "red"] );
+				y.title = 'Memory';
+				var s = chart.addSeries( 'type', dimple.plot.line );
+				chart.addLegend( 60, 10, 500, 20, 'right' );
+			}
+
+			chart.data = dimple.filterData( arrData, 'category', 'before' );
+			if( !isInit ) chart.draw();
+		});
+		
+		
+// var svg = dimple.newSvg("#chartContainer", 590, 400);
+// var data = [
+//     { Animal: "Cats", Value: (Math.random() * 1000000) },
+//     { Animal: "Dogs", Value: (Math.random() * 1000000) },
+//     { Animal: "Mice", Value: (Math.random() * 1000000) }
+// ];
+// var chart = new dimple.chart(svg, data);
+// chart.setBounds(60, 30, 510, 305)
+// var x = chart.addCategoryAxis("x", "Animal"); 
+// x.addOrderRule(["Cats", "Dogs", "Mice"]);
+// chart.addMeasureAxis("y", "Value");
+// chart.addSeries(null, dimple.plot.bar);
+// chart.draw();
+
+// d3.select("#btn").on("click", function() {
+//     chart.data = [
+//         { Animal: "Cats", Value: (Math.random() * 1000000) },
+//         { Animal: "Dogs", Value: (Math.random() * 1000000) },
+//         { Animal: "Mice", Value: (Math.random() * 1000000) }
+//     ];
+//     chart.draw(1000);
+// });
+	</script>
+</body>
+</html>
