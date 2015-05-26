@@ -10,7 +10,6 @@
 		var arrData, x, y, chart, svg, socket, isInit = true;
 		
 		arrData = [];
-		// svg = dimple.chart( '#chartContainer', arrData );
 		svg = dimple.newSvg( '#chartContainer', '100%', '100%' );
 
 		window.onresize = function () {
@@ -23,7 +22,6 @@
 		});
 		socket.on( 'init', function( o ) {
 			arrData = [];
-			// isInit = o.num;
 		});
 		socket.on( 'endinit', function() {
 			isInit = null;
