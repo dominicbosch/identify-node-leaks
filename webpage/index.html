@@ -46,6 +46,12 @@
 				memory: o.heapTotal,
 				type: 'heapTotal'
 			});
+			arrData.push({
+				category: o.category,
+				timestamp: o.timestamp,
+				memory: o.rss - o.heapTotal,
+				type: 'diffRSSAndTotal'
+			});
 			
 			if( !chart ) {
 				chart = new dimple.chart( svg, arrData );
