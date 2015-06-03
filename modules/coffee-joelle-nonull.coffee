@@ -25,9 +25,9 @@ urlArr = [
 requestArticleUrlForComments = (art, com, treepath) ->
 	urlToRequest = if treepath is 'li' then com.url else art
 	request urlToRequest, (error, response, html) ->
-		if error
-			console.log "ERROR REQUESTING: "+urlToRequest+" ("+ new Date()+")"
-		else
+		if not error
+		# 	console.log "ERROR REQUESTING: "+urlToRequest+" ("+ new Date()+")"
+		# else
 			tree = cheerio.load html
 
 			## For each new comment, check if new and read relevant data
@@ -52,10 +52,11 @@ requestArticleUrlForComments = (art, com, treepath) ->
 					currLI['parentEntry'] = (id for id in com.commentIDs when id.split('_')[0] is listItem.attr('id').split('_')[0])[0]
 					currLI['parentEntry'] = '' if currLI['parentEntry'] is undefined
 
-					# console.log JSON.stringify currLI, null, 2
+					console.log JSON.stringify currLI
 					com.commentIDs.push listItem.attr('id')
+
 				#empty variables
-				currLI = {'val' :0}
+				# currLI = {'val' :0}
 				# listItem = null
 			# tree = null
 	# urlToRequest = null #option not yet implemented in running code
@@ -66,26 +67,20 @@ getLastCommentsAndDelete = (art, com, url) ->
 	delete oUrls[url].articlelist[art]
 
 checkIfNewComments = (url4)->
-  currentDateInMS = new Date().getTime()
-  for art, com of oUrls[url4].articlelist
-    timecheck = com.timeOfPublication.getTime() + commentOptionTimeMS
-    #if com.timeOfPublication.getTime() + commentOptionTimeMS < new Date().getTime()
-    if timecheck <= currentDateInMS
-      # console.log(timecheck)
-      # console.log(currentDateInMS)
-      # console.log("checkifnewcomments if "+ new Date())
-      # console.log JSON.stringify {'timestamp': new Date(), 'articleurl': art, 'commenturl': com.url, 'status': "ENDE"}
-      getLastCommentsAndDelete art, com, url4
-    else
-      # console.log("checkifnewcomments else "+new Date())
-      requestArticleUrlForComments art, com, 'li'
+	currentDateInMS = new Date().getTime()
+	for art, com of oUrls[url4].articlelist
+		timecheck = com.timeOfPublication.getTime() + commentOptionTimeMS
+		if timecheck <= currentDateInMS
+			getLastCommentsAndDelete art, com, url4
+		else
+			requestArticleUrlForComments art, com, 'li'
 
 getDataTalkbackID = (articlehref,checkComments, url3) ->
 	if articlehref!='-1'
 		request articlehref, (error, response, html) ->#to get data-talkback-id
-			if error
-				console.log "ERROR REQUESTING: "+articlehref +" ("+ new Date()+")"
-			else
+			if not error
+			# 	console.log "ERROR REQUESTING: "+articlehref +" ("+ new Date()+")"
+			# else
 				tree = cheerio.load html
 				datatalkbackid = tree( talkbackpath ).attr('data-talkbackid')
 				commenturl = partialcommenturl + datatalkbackid
@@ -94,22 +89,18 @@ getDataTalkbackID = (articlehref,checkComments, url3) ->
 					oUrls[url3].articlelist[articlehref].url = commenturl
 					oUrls[url3].articlelist[articlehref].timeOfPublication = new Date()
 					oUrls[url3].articlelist[articlehref].commentIDs = []
-					# console.log JSON.stringify {'timestamp': new Date(), 'articleurl': articlehref, 'commenturl': commenturl, 'status': "START"}
-				# else
-				# 	console.log JSON.stringify {'timestamp': new Date(), 'articleurl': articlehref, 'commenturl': "", 'status':"KEINE"}
+					console.log JSON.stringify {'timestamp': new Date(), 'articleurl': articlehref, 'commenturl': commenturl, 'status': "START"}
+				else
+					console.log JSON.stringify {'timestamp': new Date(), 'articleurl': articlehref, 'commenturl': "", 'status':"KEINE"}
 				checkComments url3
-				#empty variables				
-				# tree = null
-				# datatalkbackid = null
-				# commenturl = null
 	else
 		checkComments url3
 
 checkIfNewArticle = (getTalkbackID, url2)->
 	request url2, ( error, response, html ) ->
-		if error
-			console.log "ERROR REQUESTING: "+url2+" ("+ new Date()+")"
-		else
+		if not error
+		# 	console.log "ERROR REQUESTING: "+url2+" ("+ new Date()+")"
+		# else
 			tree = cheerio.load html
 			# get href from current article
 			hrefelement = tree('#content').find('.clusterLeft').first().find('a').first().attr('href')
@@ -119,9 +110,6 @@ checkIfNewArticle = (getTalkbackID, url2)->
 				getTalkbackID articlehref, checkIfNewComments, url2
 			else
 				getTalkbackID '-1', checkIfNewComments, url2
-			#empty variables	
-			# tree = null
-			# hrefelement = null
 
 get20MinCommentsV3 = (url) ->
 	if !oUrls[url]
