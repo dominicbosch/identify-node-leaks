@@ -24,13 +24,11 @@
   requestArticleUrlForComments = function(art, com, treepath) {
     var urlToRequest;
     urlToRequest = treepath === 'li' ? com.url : art;
-    return request(urlToRequest, function(error, response, html) {
+    request(urlToRequest, function(error, response, html) {
       var tree;
-      if (error) {
-        return console.log("ERROR REQUESTING: " + urlToRequest + " (" + new Date() + ")");
-      } else {
+      if (!error) {
         tree = cheerio.load(html);
-        return tree(treepath).each(function(i, elem) {
+        tree(treepath).each(function(i, elem) {
           var currDate, currLI, dt, id, listItem, ref, timezoneOffsetInHours;
           currLI = {};
           listItem = tree(this);
@@ -61,45 +59,45 @@
             if (currLI['parentEntry'] === void 0) {
               currLI['parentEntry'] = '';
             }
+            console.log(JSON.stringify(currLI));
             com.commentIDs.push(listItem.attr('id'));
           }
-          return currLI = {
-            'val': 0
-          };
+          return currLI = listItem = dt = i = elem = null;
         });
+        treepath = null;
       }
+      return art = com = error = response = html = tree = null;
     });
+    return urlToRequest = null;
   };
 
   getLastCommentsAndDelete = function(art, com, url) {
     requestArticleUrlForComments(art, com, '.comments > li');
-    return delete oUrls[url].articlelist[art];
+    delete oUrls[url].articlelist[art];
+    return art = com = url = null;
   };
 
   checkIfNewComments = function(url4) {
-    var art, com, currentDateInMS, ref, results, timecheck;
+    var art, com, currentDateInMS, ref, timecheck;
     currentDateInMS = new Date().getTime();
     ref = oUrls[url4].articlelist;
-    results = [];
     for (art in ref) {
       com = ref[art];
       timecheck = com.timeOfPublication.getTime() + commentOptionTimeMS;
       if (timecheck <= currentDateInMS) {
-        results.push(getLastCommentsAndDelete(art, com, url4));
+        getLastCommentsAndDelete(art, com, url4);
       } else {
-        results.push(requestArticleUrlForComments(art, com, 'li'));
+        requestArticleUrlForComments(art, com, 'li');
       }
     }
-    return results;
+    return currentDateInMS = timecheck = url4 = null;
   };
 
   getDataTalkbackID = function(articlehref, checkComments, url3) {
     if (articlehref !== '-1') {
       return request(articlehref, function(error, response, html) {
         var commenturl, datatalkbackid, tree;
-        if (error) {
-          return console.log("ERROR REQUESTING: " + articlehref(+" (" + new Date() + ")"));
-        } else {
+        if (!error) {
           tree = cheerio.load(html);
           datatalkbackid = tree(talkbackpath).attr('data-talkbackid');
           commenturl = partialcommenturl + datatalkbackid;
@@ -108,31 +106,45 @@
             oUrls[url3].articlelist[articlehref].url = commenturl;
             oUrls[url3].articlelist[articlehref].timeOfPublication = new Date();
             oUrls[url3].articlelist[articlehref].commentIDs = [];
+            console.log(JSON.stringify({
+              'timestamp': new Date(),
+              'articleurl': articlehref,
+              'commenturl': commenturl,
+              'status': "START"
+            }));
+          } else {
+            console.log(JSON.stringify({
+              'timestamp': new Date(),
+              'articleurl': articlehref,
+              'commenturl': "",
+              'status': "KEINE"
+            }));
           }
-          return checkComments(url3);
+          checkComments(url3);
         }
+        return commenturl = datatalkbackid = tree = response = html = error = url3 = checkComments = articlehref = null;
       });
     } else {
-      return checkComments(url3);
+      checkComments(url3);
+      return url3 = checkComments = articlehref = null;
     }
   };
 
   checkIfNewArticle = function(getTalkbackID, url2) {
     return request(url2, function(error, response, html) {
       var articlehref, hrefelement, tree;
-      if (error) {
-        return console.log("ERROR REQUESTING: " + url2 + " (" + new Date() + ")");
-      } else {
+      if (!error) {
         tree = cheerio.load(html);
         hrefelement = tree('#content').find('.clusterLeft').first().find('a').first().attr('href');
         if (hrefelement !== oUrls[url2].oldhrefelement) {
           articlehref = rooturl + hrefelement;
           oUrls[url2].oldhrefelement = hrefelement;
-          return getTalkbackID(articlehref, checkIfNewComments, url2);
+          getTalkbackID(articlehref, checkIfNewComments, url2);
         } else {
-          return getTalkbackID('-1', checkIfNewComments, url2);
+          getTalkbackID('-1', checkIfNewComments, url2);
         }
       }
+      return articlehref = hrefelement = tree = error = response = html = url2 = getTalkbackID = null;
     });
   };
 
