@@ -52,7 +52,7 @@ function requestArticleUrlForComments( art, com, treepath ) {
 					idFirstPart = id.split( '_' )[0];
 					j = 0;
 					len = com.commentIDs.length;
-					while( j < len && currLI['parentEntry'] === '' )
+					while( j < len && currLI['parentEntry'] === '' ) {
 						parId = com.commentIDs[j++];
 						if (parId.split( '_' )[0] === idFirstPart) {
 							currLI[ 'parentEntry' ] = parId;
@@ -129,9 +129,9 @@ function get20MinCommentsV3( url ) {
 					.attr( 'href' );
 			if( hrefelement !== oUrls[ url ].oldhrefelement ) {
 				oUrls[ url ].oldhrefelement = hrefelement;
-				getTalkbackID( rooturl + hrefelement, checkIfNewComments, url );
+				getTalkbackID( rooturl + hrefelement, url );
 			} else {
-				getTalkbackID( '-1', checkIfNewComments, url );
+				getTalkbackID( '-1', url );
 			}
 		}
 	});

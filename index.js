@@ -46,6 +46,7 @@ var app, server, evt,
 // console.log( 'Server started, Starting memoy leaking script' );
 
 console.log( 'Starting memoy leaking script' );
+
 fs.writeFileSync( 'logs/' + fileName + '.log', '' );
 
 function doLoop() {

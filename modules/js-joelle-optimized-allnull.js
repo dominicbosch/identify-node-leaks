@@ -9,15 +9,15 @@ var cheerio = require( 'cheerio' ),
 	talkbackpath = '#talkback', 
 	rooturl = 'http://www.20min.ch', 
 	urlArr = [
-		'http://www.20min.ch/schweiz',
-		'http://www.20min.ch/ausland',
-		'http://www.20min.ch/finance',
-		'http://www.20min.ch/sport',
-		'http://www.20min.ch/people',
-		'http://www.20min.ch/entertainment',
-		'http://www.20min.ch/digital',
-		'http://www.20min.ch/wissen',
-		'http://www.20min.ch/leben'
+		'http://www.20min.ch/schweiz/',
+		'http://www.20min.ch/ausland/',
+		'http://www.20min.ch/finance/',
+		'http://www.20min.ch/sport/',
+		'http://www.20min.ch/people/',
+		'http://www.20min.ch/entertainment/',
+		'http://www.20min.ch/digital/',
+		'http://www.20min.ch/wissen/',
+		'http://www.20min.ch/leben/'
 	];
 
 function requestArticleUrlForComments( art, com, treepath ) {
@@ -51,7 +51,7 @@ function requestArticleUrlForComments( art, com, treepath ) {
 					idFirstPart = id.split( '_' )[0];
 					j = 0;
 					len = com.commentIDs.length;
-					while( j < len && currLI['parentEntry'] === '' )
+					while( j < len && currLI['parentEntry'] === '' ) {
 						parId = com.commentIDs[j++];
 						if (parId.split( '_' )[0] === idFirstPart) {
 							currLI[ 'parentEntry' ] = parId;
@@ -131,9 +131,9 @@ function get20MinCommentsV3( url ) {
 					.attr( 'href' );
 			if( hrefelement !== oUrls[ url ].oldhrefelement ) {
 				oUrls[ url ].oldhrefelement = hrefelement;
-				getTalkbackID( rooturl + hrefelement, checkIfNewComments, url );
+				getTalkbackID( rooturl + hrefelement, url );
 			} else {
-				getTalkbackID( '-1', checkIfNewComments, url );
+				getTalkbackID( '-1', url );
 			}
 		}
 		hrefelement = tree = err = resp = html = url = null;

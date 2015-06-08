@@ -5,8 +5,21 @@
 	<script type="text/javascript" src="js/dimple.v2.1.2.min.js"></script>
 </head>
 <body>
+	<div style="font-family: Tahoma, sans-serif; position: absolute">
+		Metric: <select id="sel">
+			<option>rss</option>
+			<option selected>heapUsed</option>
+			<option>heapTotal</option>
+			<option>diffRSSAndTotal</option>
+		</select>
+	</div>
 	<div id="chartContainer"></div>
 	<script type="text/javascript">
+		d3.select( '#sel' ).on( 'change', function( d ) {
+			chart.data = dimple.filterData( arrData, 'type', this.value );
+			chart.draw();
+		});
+
 		var arrData, x, y, chart, svg, socket, isInit = true;
 		
 		arrData = [];
@@ -21,37 +34,52 @@
 			console.log('connected');
 		});
 		socket.on( 'init', function( o ) {
+			console.log('init');
+			if( chart ) {
+				chart.svg.selectAll( '*' ).remove();
+				chart = null;
+			}
 			arrData = [];
 		});
 		socket.on( 'endinit', function() {
+			console.log('endinit');
 			isInit = null;
 			if( chart ) chart.draw();
 		});
-		socket.on( 'memusage', function( o ) {
-			arrData.push({
-				category: o.category,
-				timestamp: o.timestamp,
-				memory: o.rss,
-				type: 'rss'
-			});
-			arrData.push({
-				category: o.category,
-				timestamp: o.timestamp,
-				memory: o.heapUsed,
-				type: 'heapUsed'
-			});
-			arrData.push({
-				category: o.category,
-				timestamp: o.timestamp,
-				memory: o.heapTotal,
-				type: 'heapTotal'
-			});
-			arrData.push({
-				category: o.category,
-				timestamp: o.timestamp,
-				memory: o.rss - o.heapTotal,
-				type: 'diffRSSAndTotal'
-			});
+		socket.on( 'memusage', function( arr ) {
+			var begin;
+			console.log( arr );
+			if( arr.length > 0 ) begin = arr[0].timestamp;
+			for (var i = 0; i < arr.length; i++) {
+				arrData.push({
+					category: arr[i].category,
+					timestamp: arr[i].timestamp - begin,
+					memory: arr[i].rss,
+					file: arr[i].file,
+					type: 'rss'
+				});
+				arrData.push({
+					category: arr[i].category,
+					timestamp: arr[i].timestamp - begin,
+					memory: arr[i].heapUsed,
+					file: arr[i].file,
+					type: 'heapUsed'
+				});
+				arrData.push({
+					category: arr[i].category,
+					timestamp: arr[i].timestamp - begin,
+					memory: arr[i].heapTotal,
+					file: arr[i].file,
+					type: 'heapTotal'
+				});
+				arrData.push({
+					category: arr[i].category,
+					timestamp: arr[i].timestamp - begin,
+					memory: arr[i].rss - arr[i].heapTotal,
+					file: arr[i].file,
+					type: 'diffRSSAndTotal'
+				});
+			}
 			
 			if( !chart ) {
 				chart = new dimple.chart( svg, arrData );
@@ -66,12 +94,12 @@
 				y = chart.addMeasureAxis( 'y', 'memory' );
 				// chart.addColorAxis( 'rss', ["green", "yellow", "red"] );
 				y.title = 'Memory';
-				var s = chart.addSeries( 'type', dimple.plot.line );
+				var s = chart.addSeries( 'file', dimple.plot.line );
 				chart.addLegend( 60, 10, 500, 20, 'right' );
 			}
 
 			chart.data = dimple.filterData( arrData, 'category', 'before' );
-			if( !isInit ) chart.draw();
+			chart.data = dimple.filterData( arrData, 'type', 'heapUsed' );
 		});
 		
 		
