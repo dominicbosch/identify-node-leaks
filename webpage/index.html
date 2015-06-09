@@ -3,21 +3,89 @@
 	<script type="text/javascript" src="js/socket.io-1.3.5.js"></script>
 	<script type="text/javascript" src="js/d3.v3.min.js"></script>
 	<script type="text/javascript" src="js/dimple.v2.1.2.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/main.css"> </head>
 </head>
 <body>
-	<div style="font-family: Tahoma, sans-serif; position: absolute">
+	<div id="menu">
 		Metric: <select id="sel">
 			<option>rss</option>
 			<option selected>heapUsed</option>
 			<option>heapTotal</option>
 			<option>diffRSSAndTotal</option>
 		</select>
+		Chunk Size: <select id="chunk">
+			<option selected>None</option>
+			<option value="0.25">15 Minutes</option>
+			<option value="0.5">30 Minutes</option>
+			<option value="1">1 Hour</option>
+			<option value="3">3 Hours</option>
+			<option value="6">6 Hours</option>
+			<option value="12">12 Hours</option>
+			<option value="24">24 Hours</option>
+		</select>
 	</div>
 	<div id="chartContainer"></div>
 	<script type="text/javascript">
-		d3.select( '#sel' ).on( 'change', function( d ) {
-			chart.data = dimple.filterData( arrData, 'type', this.value );
+		'use strict';
+
+		var filter = 'heapUsed';
+		d3.select( '#sel' ).on( 'change', function() {
+			filter = this.value;
+			chart.data = dimple.filterData( arrData, 'category', 'before' );
+			chart.data = dimple.filterData( chart.data, 'type', filter );
+			// chart.data = dimple.filterData( arrData, 'type', filter );
 			chart.draw();
+		});
+		d3.select( '#chunk' ).on( 'change', function() {
+			var chunk, oChunks, oD, arrChunks = [],
+				oneHourOffset = 60 * 60 * 1000,
+				chunksize = parseFloat(this.value);
+			oChunks = {
+				rss: {},
+				heapUsed: {},
+				heapTotal: {},
+				diffRSSAndTotal: {}
+			};
+			for( var i = 0; i < arrData.length; i++ ) {
+				oD = arrData[i];
+				chunk = parseInt( (oD.timestamp + oneHourOffset) / 1000 / 60 / 60 / chunksize);
+				if( !oChunks[oD.type] ) {
+					oChunks[oD.type] = {};
+				}
+				if( !oChunks[oD.type][oD.file] ) {
+					oChunks[oD.type][oD.file] = {};
+				}
+				if( !oChunks[oD.type][oD.file][oD.category] ) {
+					oChunks[oD.type][oD.file][oD.category] = {};
+				}
+				if( !oChunks[oD.type][oD.file][oD.category][chunk] ) {
+					oChunks[oD.type][oD.file][oD.category][chunk] = oD;
+					oD.timestamp = (chunk + chunksize / 2) * 60 * 60 * 1000;
+					oD.sumMem = oD.memory;
+					oD.numChunks = 1;
+					console.log(oD.timestamp);
+				} else {
+					oChunks[oD.type][oD.file][oD.category][chunk].sumMem += oD.memory;
+					oChunks[oD.type][oD.file][oD.category][chunk].numChunks++;
+				}
+			}
+			for( var typ in oChunks ) {
+				for( var file in oChunks[typ] ) {
+					for( var cat in oChunks[typ][file] ) {
+						for( var chnk in oChunks[typ][file][cat] ) {
+							oD = oChunks[typ][file][cat][chnk];
+							oD.memory = oD.sumMem / oD.numChunks;
+							arrChunks.push( oD );
+						}
+					}
+				}
+			}
+			console.log(arrChunks, filter);
+			chart.data = dimple.filterData( arrChunks, 'category', 'before' );
+			// chart.data = dimple.filterData( arrChunks, 'type', filter );
+			chart.data = dimple.filterData( chart.data, 'type', filter );
+			chart.draw();
+
 		});
 
 		var arrData, x, y, chart, svg, socket, isInit = true;
@@ -48,8 +116,7 @@
 		});
 		socket.on( 'memusage', function( arr ) {
 			var begin;
-			console.log( arr );
-			if( arr.length > 0 ) begin = arr[0].timestamp;
+			if( arr.length > 0 ) begin = arr[0].timestamp + (1000 * 60 * 60);
 			for (var i = 0; i < arr.length; i++) {
 				arrData.push({
 					category: arr[i].category,
@@ -84,22 +151,25 @@
 			if( !chart ) {
 				chart = new dimple.chart( svg, arrData );
 				// chart.setBounds( 60, 30, 505, 305 );
-                chart.setMargins("60px", "30px", "110px", "70px");
+                chart.setMargins("60px", "60px", "110px", "70px");
 
 				// x.addOrderRule("Date");
 				x = chart.addTimeAxis( 'x', 'timestamp' );
-				x.tickFormat = '%b %e %H:%M';
-				x.title = 'Time';
+				// x.tickFormat = '%b %e %H:%M';
+				x.tickFormat = '%H:%M';
+				x.title = 'Time (h:m)';
 
 				y = chart.addMeasureAxis( 'y', 'memory' );
 				// chart.addColorAxis( 'rss', ["green", "yellow", "red"] );
 				y.title = 'Memory';
 				var s = chart.addSeries( 'file', dimple.plot.line );
-				chart.addLegend( 60, 10, 500, 20, 'right' );
+				// s.aggregate = dimple.aggregateMethod.avg;
+				chart.addLegend( 50, 40, 200, 80, 'right', s );
 			}
 
 			chart.data = dimple.filterData( arrData, 'category', 'before' );
-			chart.data = dimple.filterData( arrData, 'type', 'heapUsed' );
+			chart.data = dimple.filterData( chart.data, 'type', 'heapUsed' );
+			console.log( chart.data );
 		});
 		
 		
