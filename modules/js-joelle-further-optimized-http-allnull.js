@@ -7,7 +7,7 @@ var cheerio = require( 'cheerio' ),
 	oSectionUrls = {},
 	interval = 2 * 24 * 60 * 60 * 1000, // days * hours * minutes * seconds * milliseconds
 	urlDiscussion = 'http://www.20min.ch/community/storydiscussion/messageoverview.tmpl?storyid=', 
-	rooturl = 'http://www.20min.ch', 
+	rootUrl = 'http://www.20min.ch', 
 	arrSectionUrls = [
 		'http://www.20min.ch/schweiz/'
 		//,
@@ -20,76 +20,52 @@ var cheerio = require( 'cheerio' ),
 		// 'http://www.20min.ch/wissen/',
 		// 'http://www.20min.ch/leben/'
 	];
+
 memwatch.on('leak', function(leak) {
-	console.log( 'MEMWATCH LEAK' );
-	console.log( leak );
+	leak.timestamp = (new Date()).getTime();
+	console.log('MEMWATCH LEAK: ', JSON.stringify(leak));
 });
-// memwatch.on('stats', function(stats) {
-// 	console.log( 'MEMWATCH STATS' );
-// 	console.log( stats );
-// });
+
 function request( url, cb ) {
 	http.get( url, function( res ) {
-		var body = '';
-		res.on( 'data', function( d ) {
-			body += d;
-			d = null;
-		});
-		res.on( 'end', function() {
-			cb( null, null, body );
-			cb = body = null;
-		});
-	}).on( 'error', cb );
-	url = null;
+		var chunks = [];
+		res.on('data', function(chunk) { chunks.push(chunk) });
+		res.on('end', function() { cb(null, null, chunks.join('')) });
+	}).on('error', cb);
 }
 
+function unleakString( s ) { return (' '+s).substr(1) }
+
 function requestArticleUrlForComments( urlArticle, oArticle, treepath ) {
-	console.log( 'requestArticleUrlForComments -> urlArticle: ', typeof urlArticle );
-	console.log( 'requestArticleUrlForComments -> urlArticle: ', urlArticle );
-	console.log( 'requestArticleUrlForComments -> oArticle: ', typeof oArticle );
-	console.log( 'requestArticleUrlForComments -> oArticle.url: ', oArticle.url );
-	console.log( 'requestArticleUrlForComments -> treepath: ', typeof treepath );
-	
 	request( ( treepath === 'li' ? oArticle.url : urlArticle ), function( err, resp, html ) {
 		if ( !err ) {
 			cheerio.load( html )( treepath ).each(function( i, elem ) {
 				var j, len, parId, currLI, currDate, dt, id, idFirstPart, listItem;
-				console.log( Object.keys(this) );
 				listItem = cheerio( this );
-				console.log( Object.keys(listItem) );
-				id = listItem.attr( 'id' );
-				console.log( 'requestArticleUrlForComments -> id: ', typeof id );
+				id = unleakString(listItem.attr('id'));
 				if ( oArticle.commentIDs.indexOf( id ) < 0 ) {
 					dt = listItem.find( '.time' ).first().text().slice( 3 );
-					console.log( 'requestArticleUrlForComments -> dt: ', typeof dt );
 					currDate = Date.UTC(
-						dt.substring( 6, 10 ),
-						dt.substring( 3, 5 ) - 1,
-						dt.substring( 0, 2 ),
-						parseInt( dt.substring( 11, 13 ) ) + (new Date().getTimezoneOffset() / 60),
-						dt.substring( 14 )
+						unleakString(dt.substring( 6, 10 )),
+						unleakString(dt.substring( 3, 5 )) - 1,
+						unleakStringdt.substring( 0, 2 )),
+						parseInt(unleakString(dt.substring( 11, 13 ))) + (new Date().getTimezoneOffset() / 60),
+						unleakString(dt.substring( 14 ))
 					);
-					console.log( 'requestArticleUrlForComments -> currDate: ', typeof currDate );
 					currLI = {
 						timestamp: new Date(),
 						articleurl: urlArticle,
 						commenturl: oArticle.url,
 						id: id,
 						commentTime: new Date( currDate ),
-						author: listItem.find( '.author' ).first().text(),
-						title: listItem.find( '.title' ).first().text(),
-						content: listItem.find( '.content' ).first().text(),
+						author: unleakString(listItem.find( '.author' ).first().text()),
+						title: unleakString(listItem.find( '.title' ).first().text()),
+						content: unleakString(listItem.find( '.content' ).first().text()),
 						parentEntry: ''
 					};
-					console.log( 'requestArticleUrlForComments -> currLI.timestamp: ', typeof currLI.timestamp );
-					console.log( 'requestArticleUrlForComments -> currLI.commenturl: ', typeof currLI.commenturl );
-					console.log( 'requestArticleUrlForComments -> currLI.author: ', typeof currLI.author );
-					console.log( 'requestArticleUrlForComments -> currLI.title: ', typeof currLI.title );
-					console.log( 'requestArticleUrlForComments -> currLI.content: ', typeof currLI.content );
-					idFirstPart = id.split( '_' )[0];
+					idFirstPart = id.split('_')[0];
 					j = 0;
 					len = oArticle.commentIDs.length;
-					console.log(oArticle.commentIDs);
 					while( j < len && currLI.parentEntry === '' ) {
 						parId = oArticle.commentIDs[j++];
 						if (parId.split( '_' )[0] === idFirstPart) {
@@ -99,88 +75,85 @@ function requestArticleUrlForComments( urlArticle, oArticle, treepath ) {
 					console.log(JSON.stringify(currLI));
 					oArticle.commentIDs.push( id );
 				}
-				j = len = parId = currLI = currDate = dt = id = idFirstPart = listItem = null;
 			});
 		}
-		err = resp = urlArticle = oArticle = treepath = null;
 	});
 };
 
-function checkIfNewComments( urlSection ) {
-	console.log( 'checkIfNewComments -> urlSection: ', typeof urlSection )
+function checkIfNewComments( sectionUrl ) {
 	var art, currentDateInMS, oArticles, timecheck;
 	currentDateInMS = new Date().getTime();
-	console.log( 'checkIfNewComments -> currentDateInMS: ', typeof currentDateInMS )
-	oArticles = oSectionUrls[ urlSection ].articlelist;
+	oArticles = oSectionUrls[ sectionUrl ].articlelist;
 	for( art in oArticles ) {
-		console.log( 'art: ', art );
-		console.log( 'checkIfNewComments -> currentDateInMS: ', typeof currentDateInMS )
 		timecheck = oArticles[ art ].timeOfPublication.getTime() + interval;
 		if( timecheck <= currentDateInMS ) {
 			requestArticleUrlForComments( art, oArticles[ art ], '.comments > li' );
-			delete oSectionUrls[ urlSection ].articlelist[ art ];
+			delete oSectionUrls[ sectionUrl ].articlelist[ art ];
 		} else {
 			requestArticleUrlForComments( art, oArticles[ art ], 'li' );
 		}
 	}
-	urlSection = art = currentDateInMS = oArticles = timecheck = null;
 }
 
-function getTalkbackID( articlehref, url ) {
-	console.log( 'getTalkbackID -> articlehref: ', typeof articlehref )
-	console.log( 'getTalkbackID -> url: ', typeof url )
-	request( articlehref, function( err, resp, html ) {
-		var commenturl, datatalkbackid;
-		if( !err ) {
-			datatalkbackid = cheerio.load( html )( '#talkback' ).attr( 'data-talkbackid' );
-			console.log( 'getTalkbackID -> datatalkbackid: ', typeof datatalkbackid )
-			commenturl = urlDiscussion + datatalkbackid;
-			console.log( 'getTalkbackID -> commenturl: ', typeof commenturl )
-			if ( datatalkbackid ) {  
-				oSectionUrls[ url ].articlelist[ articlehref ] = {
-					url: commenturl,
-					timeOfPublication: new Date(),
-					commentIDs: []
-				};
-				console.log( JSON.stringify( oSectionUrls[ url ].articlelist[ articlehref ] ));
-				console.log( JSON.stringify(
-					{'timestamp': new Date(), 'articleurl': articlehref, 'commenturl': commenturl, 'status': "START"}
-				));
-			} else {
-				console.log( JSON.stringify(
-					{'timestamp': new Date(), 'articleurl': articlehref, 'commenturl': '', 'status': "KEINE"}
-				));
-			}
-			checkIfNewComments( url );
-			commenturl = datatalkbackid = articlehref = url = null;
-		}
-	});
-}
-
-function get20MinCommentsV3( urlSection ) {
-	console.log( 'get20MinCommentsV3 -> urlSection: ', typeof urlSection )
-	if( !oSectionUrls[ urlSection ] ) {
-		oSectionUrls[ urlSection ] = {
+function get20MinCommentsV3( sectionUrl ) {
+	if(!oSectionUrls[sectionUrl]) {
+		oSectionUrls[sectionUrl] = {
 			articlelist: {},
-			oldhrefelement: ''
+			oldArticlePath: ''
 		};
+		console.log('oSectionUrls increase: ' + JSON.stringify(oSectionUrls).length);
 	}
-	request( urlSection, function( err, resp, html ) {
-		var hrefelement;
-		if( !err ) {
-			hrefelement = cheerio.load( html )( '#content' )
-				.find( '.clusterLeft' ).first()
-				.find( 'a' ).first()
-					.attr( 'href' );
-			console.log( 'get20MinCommentsV3 -> hrefelement: ', typeof hrefelement )
-			if( hrefelement !== oSectionUrls[ urlSection ].oldhrefelement ) {
-				oSectionUrls[ urlSection ].oldhrefelement = hrefelement;
-				getTalkbackID( rooturl + hrefelement, urlSection );
+	request(sectionUrl, function(err, resp, html) {
+		var newArticleUrl, newPath;
+		if(!err) {
+			newPath = cheerio.load(html)('#content')
+				.find('.clusterLeft').first().find('a').first().attr('href');
+
+			// No new article, just check for new comments
+			if(newPath === oSectionUrls[sectionUrl].oldArticlePath ) {
+				checkIfNewComments( sectionUrl );
+
+			// There is a new article! Let's fetch it and then check for comments
 			} else {
-				checkIfNewComments( urlSection );
+				oSectionUrls[sectionUrl].oldArticlePath = newPath;
+				newArticleUrl = rootUrl + newPath;
+
+// Memleak avoidance:
+// (' ' + string).replace(/^\s/, '')
+// (' ' + string).substr(1) is shorter, easier to read, and faster. (And if you make a typo and write .substring(), it'll work just as well.)
+
+// getTalkbackID(rootUrl + newPath, sectionUrl);
+// function getTalkbackID( articlehref, url ) {
+// }
+
+				request( newArticleUrl, function( err, resp, html ) {
+					var commenturl, datatalkbackid, oEvent;
+					if( !err ) {
+						datatalkbackid = cheerio.load( html )( '#talkback' ).attr( 'data-talkbackid' );
+						commenturl = urlDiscussion + datatalkbackid;
+						oEvent = {
+							timestamp: new Date(),
+							articleurl: newArticleUrl
+						};
+						if ( datatalkbackid ) {  
+							oSectionUrls[ sectionUrl ].articlelist[ newArticleUrl ] = {
+								url: commenturl,
+								timeOfPublication: new Date(),
+								commentIDs: []
+							};
+							oEvent.commenturl = commenturl;
+							oEvent.status = "START";
+						} else {
+							oEvent.commenturl = '';
+							oEvent.status = "KEINE";
+						}
+						console.log(JSON.stringify(oEvent));
+						checkIfNewComments(sectionUrl);
+					}
+				});
+
 			}
 		}
-		hrefelement = err = resp = html = urlSection = null;
 	});
 }
 
@@ -189,3 +162,5 @@ exports.test = function() {
 		get20MinCommentsV3( arrSectionUrls[j] );
 	}
 };
+
+// 26529941

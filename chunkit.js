@@ -12,7 +12,7 @@ var fs = require('fs'),
 console.log('Libraries loaded, Starting to parse');
 
 function insertMetrics( oChunks, oEvt, begin ) {
-
+	var oTmp;
 	for (var mtrc in oGetMetric) {
 		if(!oChunks[mtrc]) {
 			oChunks[mtrc] = {};
@@ -36,8 +36,10 @@ function insertMetrics( oChunks, oEvt, begin ) {
 					numChunks: 1
 				};
 			} else {
-				oChunks[mtrc][oEvt.category][arrChunks[j]][oEvt.file][chunk].sumMem += oGetMetric[mtrc](oEvt);
-				oChunks[mtrc][oEvt.category][arrChunks[j]][oEvt.file][chunk].numChunks++;
+				oTmp = oChunks[mtrc][oEvt.category][arrChunks[j]][oEvt.file][chunk];
+				oTmp.sumMem += oGetMetric[mtrc](oEvt);
+				oTmp.numChunks++;
+				oTmp.averageMem = oTmp.sumMem / oTmp.numChunks;
 			}
 		}
 	}
@@ -45,7 +47,7 @@ function insertMetrics( oChunks, oEvt, begin ) {
 
 fs.readdir('logs/', function(err, files) {
 	if(!err) {
-		var arrData, len, oEvt, fileName, begin, oChunks;
+		var arrData, len, oEvt, fileName, oChunks, begin;
 
 		oChunks = {
 			rss: {},
@@ -61,11 +63,10 @@ fs.readdir('logs/', function(err, files) {
 				try {
 					ts = JSON.parse(arrData[0]).timestamp;
 					if(ts) {
-						if(!begin || begin>ts) {
-							begin = ts;
-							console.log('setting begin to: '+begin);
+						oFiles[file] = {
+							data: arrData,
+							begin: ts
 						}
-						oFiles[file] = arrData;
 					}
 				} catch(e) {
 					console.log('Can\'t parse first line of '+file);
@@ -78,15 +79,16 @@ fs.readdir('logs/', function(err, files) {
 		for(var file in oFiles) {
 			console.log('Processing file '+file);
 			fileName = file.substring(0, file.length-4);
-			arrData = oFiles[file];
+			arrData = oFiles[file].data;
+			begin = oFiles[file].begin;
 			for(var i = 0; i < arrData.length-1; i++) {
-				try  {
+				// try  {
 					oEvt = JSON.parse(arrData[i]);
 					oEvt.file = fileName;
 					insertMetrics(oChunks, oEvt, begin);
-				} catch(e) {
-					console.log('error writing: '+file+', line: '+i, e);
-				}
+				// } catch(e) {
+				// 	console.log('error writing: '+file+', line: '+i, e);
+				// }
 			}
 		}
 		for(var mtrc in oChunks) {

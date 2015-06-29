@@ -1,12 +1,13 @@
 
 var app, fs = require('fs'),
+	port = 9867,
 	express = require('express');
 
 console.log('Libraries loaded, Starting server');
 
 app = express();
 app.use(express.static('webpage'));
-app.post('/data/:chunksize/:category/:metric', function(req, res) {
+app.get('/data/:chunksize/:category/:metric', function(req, res) {
 	var oDat, prms = req.params;
 	try {
 		oDat = JSON.parse(fs.readFileSync('chunked/'
@@ -20,6 +21,6 @@ app.post('/data/:chunksize/:category/:metric', function(req, res) {
 	}
 });
 
-app.listen( 9876, function() {
-	console.log('server listening on port ' + 8642);
+app.listen( port, function() {
+	console.log('server listening on port ' + port);
 });
