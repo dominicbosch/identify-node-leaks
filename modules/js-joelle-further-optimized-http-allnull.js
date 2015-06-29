@@ -48,9 +48,9 @@ function requestArticleUrlForComments( urlArticle, oArticle, treepath ) {
 					currDate = Date.UTC(
 						unleakString(dt.substring( 6, 10 )),
 						unleakString(dt.substring( 3, 5 )) - 1,
-						unleakStringdt.substring( 0, 2 )),
+						unleakString(dt.substring( 0, 2 )),
 						parseInt(unleakString(dt.substring( 11, 13 ))) + (new Date().getTimezoneOffset() / 60),
-						unleakString(dt.substring( 14 )
+						unleakString(dt.substring( 14 ))
 					);
 					currLI = {
 						timestamp: new Date(),
