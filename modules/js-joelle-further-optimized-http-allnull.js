@@ -10,15 +10,15 @@ var cheerio = require( 'cheerio' ),
 	rootUrl = 'http://www.20min.ch', 
 	arrSectionUrls = [
 		'http://www.20min.ch/schweiz/'
-		//,
-		// 'http://www.20min.ch/ausland/',
-		// 'http://www.20min.ch/finance/',
-		// 'http://www.20min.ch/sport/',
-		// 'http://www.20min.ch/people/',
-		// 'http://www.20min.ch/entertainment/',
-		// 'http://www.20min.ch/digital/',
-		// 'http://www.20min.ch/wissen/',
-		// 'http://www.20min.ch/leben/'
+		,
+		'http://www.20min.ch/ausland/',
+		'http://www.20min.ch/finance/',
+		'http://www.20min.ch/sport/',
+		'http://www.20min.ch/people/',
+		'http://www.20min.ch/entertainment/',
+		'http://www.20min.ch/digital/',
+		'http://www.20min.ch/wissen/',
+		'http://www.20min.ch/leben/'
 	];
 
 memwatch.on('leak', function(leak) {
@@ -50,7 +50,7 @@ function requestArticleUrlForComments( urlArticle, oArticle, treepath ) {
 						unleakString(dt.substring( 3, 5 )) - 1,
 						unleakStringdt.substring( 0, 2 )),
 						parseInt(unleakString(dt.substring( 11, 13 ))) + (new Date().getTimezoneOffset() / 60),
-						unleakString(dt.substring( 14 ))
+						unleakString(dt.substring( 14 )
 					);
 					currLI = {
 						timestamp: new Date(),
@@ -163,4 +163,3 @@ exports.test = function() {
 	}
 };
 
-// 26529941
