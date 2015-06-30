@@ -8,4 +8,4 @@ nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-onlyComm
 nodejs --max-old-space-size=10000 index.js js-joelle-further-optimized-http-allnull.js 60 1>&2 > outputs/js-joelle-further-optimized-http-allnull.log &
 nodejs --max-old-space-size=10000 index.js js-joelle-optimized-allnull.js 60 1>&2 > outputs/js-joelle-optimized-allnull.log &
 nodejs --max-old-space-size=10000 index.js js-joelle-optimized-http-allnull.js 60 1>&2 > outputs/js-joelle-optimized-http-allnull.log &
-nodejs --max-old-space-size=10000 index.js js-joelle-further-nonull.js 60 1>&2 > outputs/js-joelle-further-nonull.log &
+nodejs --max-old-space-size=10000 index.js js-joelle-optimized-nonull.js 60 1>&2 > outputs/js-joelle-optimized-nonull.log &
