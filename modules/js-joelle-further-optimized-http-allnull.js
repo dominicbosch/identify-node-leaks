@@ -9,8 +9,7 @@ var cheerio = require( 'cheerio' ),
 	urlDiscussion = 'http://www.20min.ch/community/storydiscussion/messageoverview.tmpl?storyid=', 
 	rootUrl = 'http://www.20min.ch', 
 	arrSectionUrls = [
-		'http://www.20min.ch/schweiz/'
-		,
+		'http://www.20min.ch/schweiz/',
 		'http://www.20min.ch/ausland/',
 		'http://www.20min.ch/finance/',
 		'http://www.20min.ch/sport/',
