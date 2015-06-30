@@ -1,9 +1,11 @@
 #!/bin/bash
 rm logs/*
 rm outputs/*
-nodejs --max-old-space-size=10000 index.js coffee-joelle-allnull.js 60 1>&2 > outputs/coffee-joelle-further-allnull.log &
-nodejs --max-old-space-size=10000 index.js coffee-joelle-nonull.js 60 1>&2 > outputs/coffee-joelle-further-nonull.log &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-allnull.js 60 1>&2 > outputs/coffee-joelle-allnull.log &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-nonull.js 60 1>&2 > outputs/coffee-joelle-nonull.log &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-full.js 60 1>&2 > outputs/coffee-joelle-stringUnleaked-full.log &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-onlyCommentId.js 60 1>&2 > outputs/coffee-joelle-stringUnleaked-onlyCommentId.log &
 nodejs --max-old-space-size=10000 index.js js-joelle-further-optimized-http-allnull.js 60 1>&2 > outputs/js-joelle-further-optimized-http-allnull.log &
-nodejs --max-old-space-size=10000 index.js js-joelle-further-optimized-http-allnull.js 60 1>&2 > outputs/js-joelle-further-optimized-http-allnull.log &
-nodejs --max-old-space-size=10000 index.js js-joelle-further-optimized-http-allnull.js 60 1>&2 > outputs/js-joelle-further-optimized-http-allnull.log &
-
+nodejs --max-old-space-size=10000 index.js js-joelle-optimized-allnull.js 60 1>&2 > outputs/js-joelle-optimized-allnull.log &
+nodejs --max-old-space-size=10000 index.js js-joelle-optimized-http-allnull.js 60 1>&2 > outputs/js-joelle-optimized-http-allnull.log &
+nodejs --max-old-space-size=10000 index.js js-joelle-further-nonull.js 60 1>&2 > outputs/js-joelle-further-nonull.log &
