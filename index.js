@@ -50,7 +50,7 @@ console.log( 'Starting memoy leaking script' );
 fs.writeFileSync( 'logs/' + fileName + '.log', '' );
 
 function doLoop() {
-	console.log( 'Looping: ' + i++ );
+	// console.log( 'Looping: ' + i++ );
 	evt = process.memoryUsage();
 	evt.category = 'before';
 	evt.timestamp = (new Date()).getTime();
