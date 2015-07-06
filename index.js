@@ -47,6 +47,10 @@ var app, server, evt,
 
 console.log( 'Starting memoy leaking script' );
 
+process.on('uncaughtException', function(err) {
+	console.log(err);
+});
+
 fs.writeFileSync( 'logs/' + fileName + '.log', '' );
 
 function doLoop() {
