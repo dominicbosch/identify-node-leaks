@@ -21,13 +21,16 @@ urlArr = [
 	'http://www.20min.ch/wissen'
 	'http://www.20min.ch/leben'
 ]
+lastRequest = ''
 
 requestArticleUrlForComments = (art, com, treepath) ->
 	urlToRequest = if treepath is 'li' then com.url else art
+	lastRequest = urlToRequest
 	request urlToRequest, (error, response, html) ->
-		if not error
-		# 	console.log "ERROR REQUESTING: "+urlToRequest+" ("+ new Date()+")"
-		# else
+		if error
+			console.error 'ERROR REQUESTING: ' + urlToRequest + ' (' + new Date() + ')'
+			console.error error
+		else
 			tree = cheerio.load html
 
 			## For each new comment, check if new and read relevant data
@@ -77,10 +80,12 @@ checkIfNewComments = (url4)->
 
 getDataTalkbackID = (articlehref,checkComments, url3) ->
 	if articlehref!='-1'
+		lastRequest = articlehref
 		request articlehref, (error, response, html) ->#to get data-talkback-id
-			if not error
-			# 	console.log "ERROR REQUESTING: "+articlehref +" ("+ new Date()+")"
-			# else
+			if error
+				console.error 'ERROR REQUESTING: ' + articlehref + ' (' + new Date() + ')'
+				console.error error
+			else
 				tree = cheerio.load html
 				datatalkbackid = tree( talkbackpath ).attr('data-talkbackid')
 				commenturl = partialcommenturl + datatalkbackid
@@ -97,10 +102,12 @@ getDataTalkbackID = (articlehref,checkComments, url3) ->
 		checkComments url3
 
 checkIfNewArticle = (getTalkbackID, url2)->
+	lastRequest = url2
 	request url2, ( error, response, html ) ->
-		if not error
-		# 	console.log "ERROR REQUESTING: "+url2+" ("+ new Date()+")"
-		# else
+		if error
+			console.error 'ERROR REQUESTING: ' + url2 + ' (' + new Date() + ')'
+			console.error error
+		else
 			tree = cheerio.load html
 			# get href from current article
 			hrefelement = tree('#content').find('.clusterLeft').first().find('a').first().attr('href')
@@ -127,3 +134,4 @@ exports.getMemDump = () ->
 	JSON.stringify
 		oUrls: oUrls
 		urlArr: urlArr
+		lastRequest: lastRequest

@@ -18,9 +18,11 @@ var cheerio = require( 'cheerio' ),
 		'http://www.20min.ch/digital/',
 		'http://www.20min.ch/wissen/',
 		'http://www.20min.ch/leben/'
-	];
+	],
+	lastRequest = '';
 
 function request( url, cb ) {
+	lastRequest = url;
 	http.get( url, function( res ) {
 		var body = '';
 		res.on( 'data', function( d ) {
@@ -31,7 +33,10 @@ function request( url, cb ) {
 			cb( null, null, body );
 			cb = body = null;
 		});
-	}).on( 'error', cb );
+	}).on( 'error', function(err) {
+		 console.error( 'ERROR REQUESTING: ' + url + ' (' + new Date() + ')');
+		 console.error(err);
+	});
 	url = null;
 }
 
@@ -167,6 +172,7 @@ exports.test = function() {
 exports.getMemDump = function() {
 	return JSON.stringify({
 		oUrls: oUrls,
-		urlArr: urlArr
+		urlArr: urlArr,
+		lastRequest: lastRequest
 	});
 };

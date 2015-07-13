@@ -18,7 +18,8 @@ var cheerio = require( 'cheerio' ),
 		'http://www.20min.ch/digital/',
 		'http://www.20min.ch/wissen/',
 		'http://www.20min.ch/leben/'
-	];
+	],
+	lastRequest = '';
 
 memwatch.on('leak', function(leak) {
 	leak.timestamp = (new Date()).getTime();
@@ -26,18 +27,24 @@ memwatch.on('leak', function(leak) {
 });
 
 function request( url, cb ) {
+	lastRequest = url;
 	http.get( url, function( res ) {
 		var chunks = [];
 		res.on('data', function(chunk) { chunks.push(chunk) });
 		res.on('end', function() { cb(null, null, chunks.join('')) });
-	}).on('error', cb);
+	}).on('error', function(err){
+		console.error('ERROR REQUESTING: ' + url + ' (' + new Date() + ')');
+		console.error(err);
+	});
 }
 
 function unleakString( s ) { return (' '+s).substr(1) }
 
 function requestArticleUrlForComments( urlArticle, oArticle, treepath ) {
 	request( ( treepath === 'li' ? oArticle.url : urlArticle ), function( err, resp, html ) {
-		if ( !err ) {
+		if ( err ) {
+			console.error(err);
+		} else {
 			cheerio.load( html )( treepath ).each(function( i, elem ) {
 				var j, len, parId, currLI, currDate, dt, id, idFirstPart, listItem;
 				listItem = cheerio( this );
@@ -165,6 +172,7 @@ exports.test = function() {
 exports.getMemDump = function() {
 	return JSON.stringify({
 		oUrls: oUrls,
-		urlArr: urlArr
+		urlArr: urlArr,
+		lastRequest: lastRequest
 	});
 };

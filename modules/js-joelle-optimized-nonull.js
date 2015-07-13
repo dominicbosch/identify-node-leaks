@@ -18,13 +18,18 @@ var cheerio = require( 'cheerio' ),
 		'http://www.20min.ch/digital',
 		'http://www.20min.ch/wissen',
 		'http://www.20min.ch/leben'
-	];
+	],
+	lastRequest = '';
 
 function requestArticleUrlForComments( art, com, treepath ) {
 	var urlToRequest = ( treepath === 'li' ? com.url : art );
+	lastRequest = urlToRequest;
 	request( urlToRequest, function( err, resp, html ) {
 		var tree;
-		if ( !err ) {
+		if(err) {
+			console.error('ERROR REQUESTING: ' + urlToRequest + ' (' + new Date() + ')');
+			console.error(err);
+		} else {
 			tree = cheerio.load( html );
 			tree( treepath ).each(function( i, elem ) {
 				var j, len, parId, currDate, dt, id, idFirstPart, listItem,
@@ -84,9 +89,13 @@ function checkIfNewComments( url4 ) {
 
 function getTalkbackID( articlehref, url3 ) {
 	if( articlehref !== '-1' ) {
+		lastRequest = articlehref;
 		request( articlehref, function( err, resp, html ) {
 			var commenturl, datatalkbackid, tree;
-			if( !err ) {
+			if(err) {
+				console.error('ERROR REQUESTING: ' + articlehref + ' (' + new Date() + ')');
+				console.error(err);
+			} else {
 				tree = cheerio.load( html );
 				datatalkbackid = tree( talkbackpath ).attr( 'data-talkbackid' );
 				commenturl = partialcommenturl + datatalkbackid;
@@ -117,10 +126,13 @@ function get20MinCommentsV3( url ) {
 		oUrls[ url ].articlelist = {};
 		oUrls[ url ].oldhrefelement = '';
 	}
+	lastRequest = url;
 	request( url, function(err, resp, html ) {
 		var hrefelement, tree;
-		if( !err ) {
-		//  console.log( 'ERROR REQUESTING: ' + url + ' (' + new Date() + ')');
+		if(err) {
+			console.error( 'ERROR REQUESTING: ' + url + ' (' + new Date() + ')');
+			console.error(err);
+		} else {
 		// else {
 			tree = cheerio.load( html );
 			hrefelement = tree( '#content' )
@@ -148,6 +160,7 @@ exports.test = function() {
 exports.getMemDump = function() {
 	return JSON.stringify({
 		oUrls: oUrls,
-		urlArr: urlArr
+		urlArr: urlArr,
+		lastRequest: lastRequest
 	});
 };
