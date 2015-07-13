@@ -1,11 +1,10 @@
 #!/bin/bash
 rm logs/*
 rm outputs/*
-nodejs --max-old-space-size=10000 index.js coffee-joelle-allnull.js 60 > outputs/coffee-joelle-allnull.log 1>&2 &
-nodejs --max-old-space-size=10000 index.js coffee-joelle-nonull.js 60 > outputs/coffee-joelle-nonull.log 1>&2 &
-nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-full.js 60 > outputs/coffee-joelle-stringUnleaked-full.log 1>&2 &
-nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-onlyCommentId.js 60 > outputs/coffee-joelle-stringUnleaked-onlyCommentId.log 1>&2 &
-nodejs --max-old-space-size=10000 index.js js-joelle-further-optimized-http-allnull.js 60 > outputs/js-joelle-further-optimized-http-allnull.log 1>&2 &
-nodejs --max-old-space-size=10000 index.js js-joelle-optimized-allnull.js 60 > outputs/js-joelle-optimized-allnull.log 1>&2 &
-nodejs --max-old-space-size=10000 index.js js-joelle-optimized-http-allnull.js 60 > outputs/js-joelle-optimized-http-allnull.log 1>&2 &
-nodejs --max-old-space-size=10000 index.js js-joelle-optimized-nonull.js 60 > outputs/js-joelle-optimized-nonull.log 1>&2 &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-allnull.js 60 > outputs/coffee-joelle-allnull.log 1>&2 &1nodejs --max-old-space-size=10000 index.js coffee-joelle-nonull.js 60 > outputs/coffee-joelle-nonull.log 2>&1 &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-full.js 60 > outputs/coffee-joelle-stringUnleaked-full.log 2>&1 &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-onlyCommentId.js 60 > outputs/coffee-joelle-stringUnleaked-onlyCommentId.log 2>&1 &
+nodejs --max-old-space-size=10000 index.js js-joelle-further-optimized-http-allnull.js 60 > outputs/js-joelle-further-optimized-http-allnull.log 2>&1 &
+nodejs --max-old-space-size=10000 index.js js-joelle-optimized-allnull.js 60 > outputs/js-joelle-optimized-allnull.log 2>&1 &
+nodejs --max-old-space-size=10000 index.js js-joelle-optimized-http-allnull.js 60 > outputs/js-joelle-optimized-http-allnull.log 2>&1 &
+nodejs --max-old-space-size=10000 index.js js-joelle-optimized-nonull.js 60 > outputs/js-joelle-optimized-nonull.log 2>&1 &
