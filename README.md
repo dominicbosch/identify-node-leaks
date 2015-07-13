@@ -22,11 +22,11 @@ Create a module (you want to monitor) in the `modules` folder, which has a prope
 
 3. Convert measurment data:
 
-  Since most likely there will be a lot of measurements points, you need to convert the measurements data from time to time in order for the web application to respond fast enough when making a different selection. In order to transform the measurements into chunks as a histogram does it, type:
+  Since most likely there will be a lot of measurements points, you need to convert the measurements data from time to time in order for the web application to respond fast enough. In order to transform the measurements into chunks, such as a histogram does it, type:
 
         node chunkit.js
         
-  This will create files for three dimensions of the data, thus drastically reducing loading times for large measurements:
+  This will create files for three dimensions of the data in the `logs` folder, thus drastically reducing loading times for large measurements:
   
     - measurement point: `before` and `after` execution of the script to be monitored (after might likely be in the middle of work)
     - chunk sizes: `[0.25, 0.5, 1, 3, 6, 12, 24]` hours of averaged data
