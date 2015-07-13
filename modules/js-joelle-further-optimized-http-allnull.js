@@ -107,7 +107,7 @@ function get20MinCommentsV3( sectionUrl ) {
 			articlelist: {},
 			oldArticlePath: ''
 		};
-		console.log('oSectionUrls increase: ' + JSON.stringify(oSectionUrls).length);
+		// console.log('oSectionUrls increase: ' + JSON.stringify(oSectionUrls).length);
 	}
 	request(sectionUrl, function(err, resp, html) {
 		var newArticleUrl, newPath;

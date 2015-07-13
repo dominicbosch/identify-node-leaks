@@ -29,7 +29,7 @@ requestArticleUrlForComments = (art, com, treepath) ->
 	lastRequest = urlToRequest
 	request urlToRequest, (error, response, html) ->
 		if error
-			console.error 'ERROR REQUESTING: ' + urlToRequest + ' (' + new Date() + ')'
+			console.error 'ERROR('+__filename+') REQUESTING: ' + urlToRequest + ' (' + new Date() + ')'
 			console.error error
 		else
 			tree = cheerio.load html
@@ -84,7 +84,7 @@ getDataTalkbackID = (articlehref,checkComments, url3) ->
 		lastRequest = articlehref
 		request articlehref, (error, response, html) ->#to get data-talkback-id
 			if error
-				console.error 'ERROR REQUESTING: ' + articlehref + ' (' + new Date() + ')'
+				console.error 'ERROR('+__filename+') REQUESTING: ' + articlehref + ' (' + new Date() + ')'
 				console.error error
 			else
 				tree = cheerio.load html
@@ -108,7 +108,7 @@ checkIfNewArticle = (getTalkbackID, url2)->
 	lastRequest = url2
 	request url2, ( error, response, html ) ->
 		if error
-			console.error 'ERROR REQUESTING: ' + url2 + ' (' + new Date() + ')'
+			console.error 'ERROR('+__filename+') REQUESTING: ' + url2 + ' (' + new Date() + ')'
 			console.error error
 		else
 			tree = cheerio.load html

@@ -34,7 +34,7 @@
     return request(urlToRequest, function(error, response, html) {
       var tree;
       if (error) {
-        console.error('ERROR REQUESTING: ' + urlToRequest + ' (' + new Date() + ')');
+        console.error('ERROR(' + __filename + ') REQUESTING: ' + urlToRequest + ' (' + new Date() + ')');
         return console.error(error);
       } else {
         tree = cheerio.load(html);
@@ -105,7 +105,7 @@
       return request(articlehref, function(error, response, html) {
         var commenturl, datatalkbackid, tree;
         if (error) {
-          console.error('ERROR REQUESTING: ' + articlehref + ' (' + new Date() + ')');
+          console.error('ERROR(' + __filename + ') REQUESTING: ' + articlehref + ' (' + new Date() + ')');
           return console.error(error);
         } else {
           tree = cheerio.load(html);
@@ -143,7 +143,7 @@
     return request(url2, function(error, response, html) {
       var articlehref, hrefelement, tree;
       if (error) {
-        console.error('ERROR REQUESTING: ' + url2 + ' (' + new Date() + ')');
+        console.error('ERROR(' + __filename + ') REQUESTING: ' + url2 + ' (' + new Date() + ')');
         return console.error(error);
       } else {
         tree = cheerio.load(html);
