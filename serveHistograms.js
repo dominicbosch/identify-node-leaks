@@ -6,6 +6,7 @@ var app, fs = require('fs'),
 console.log('Libraries loaded, Starting server');
 
 app = express();
+app.get('/', function(req, res){ res.sendFile(__dirname+'/webpage/histogram.html') })
 app.use(express.static('webpage'));
 app.get('/data/:chunksize/:category/:metric', function(req, res) {
 	var oDat, prms = req.params;
@@ -20,6 +21,7 @@ app.get('/data/:chunksize/:category/:metric', function(req, res) {
 		console.log(e);
 	}
 });
+
 
 app.listen( port, function() {
 	console.log('server listening on port ' + port);

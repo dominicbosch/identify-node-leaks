@@ -30,18 +30,17 @@
 	<script type="text/javascript">
 		'use strict';
 
-		var svg, chart, oSel = {
+		var x, y, s, svg, chart, oSel = {
 			metric: 'heapUsed',
 			chunk: '1',
 			category: 'before'
 		};
 
 		window.onresize = function () {
-			if( chart ) chart.draw( 0, true );
+			if(chart) chart.draw(0, true);
 		};
 
 		function updateChart(arrData) {
-			var x, y, s;
 			if( !svg ) {
 				svg = dimple.newSvg( '#chartContainer', '100%', '100%' );
 				chart = new dimple.chart( svg, arrData );
@@ -49,29 +48,59 @@
 				chart.setMargins("60px", "60px", "110px", "100px");
 
 				// x.addOrderRule("Date");
-				x = chart.addTimeAxis( 'x', 'timestamp' );
+				// x = chart.addTimeAxis( 'x', 'timestamp' );
 				// x = chart.addMeasureAxis( 'x', 'timestamp' );
+				x = chart.addCategoryAxis( 'x', 'timestamp' );
 				// x.tickFormat = '%b %e %H:%M';
-				x.tickFormat = '%j days';
-				x.title = 'Time';
+				// x.tickFormat = '%j days';
+				// if(oSel.chunk > 3) x.tickFormat = '%e days';
+				// else x.tickFormat = '%H hours';
+				x.title = 'Hours';
 
 				y = chart.addMeasureAxis( 'y', 'averageMem' );
 				// chart.addColorAxis( 'rss', ["green", "yellow", "red"] );
 				y.title = 'Memory';
+				// s = chart.addSeries( 'filename', dimple.plot.histogram );
 				s = chart.addSeries( 'filename', dimple.plot.line );
+				// s.interpolation = 'step';
 				// s.aggregate = dimple.aggregateMethod.avg;
 				chart.addLegend( 150, 40, 200, 300, 'right', s );
+				// chart.ease = 'elastic';
 			} else {
 				chart.data = arrData;
+				// svg = dimple.newSvg( '#chartContainer', '100%', '100%' );
+				// chart = new dimple.chart( svg, arrData );
+				// // chart.setBounds( 60, 30, 505, 305 );
+				// chart.setMargins("60px", "60px", "110px", "100px");
+
+				// // x.addOrderRule("Date");
+				// // x = chart.addTimeAxis( 'x', 'timestamp' );
+				// // x = chart.addMeasureAxis( 'x', 'timestamp' );
+				// x = chart.addCategoryAxis( 'x', 'timestamp' );
+				// // x.tickFormat = '%b %e %H:%M';
+				// // x.tickFormat = '%j days';
+				// // if(oSel.chunk > 3) x.tickFormat = '%e days';
+				// // else x.tickFormat = '%H hours';
+				// x.title = 'Hours';
+
+				// y = chart.addMeasureAxis( 'y', 'averageMem' );
+				// // chart.addColorAxis( 'rss', ["green", "yellow", "red"] );
+				// y.title = 'Memory';
+				// // s = chart.addSeries( 'filename', dimple.plot.histogram );
+				// s = chart.addSeries( 'filename', dimple.plot.line );
+				// // s.interpolation = 'step';
+				// // s.aggregate = dimple.aggregateMethod.avg;
+				// chart.addLegend( 150, 40, 200, 300, 'right', s );
 			}
 			chart.draw();
+			// chart.draw(500);
 		}
 		
 		function requestData() {
 			var url = '/data/'+oSel.chunk+'/'+ oSel.category+'/'+oSel.metric;
 			d3.json(url, function(err, oJson) {
 				if(err) console.log( err );
-				else  {
+				else {
 					var arrData = []; 
 					for(var el in oJson) {
 						for(var i in oJson[el]) {

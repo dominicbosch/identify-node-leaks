@@ -31,7 +31,7 @@ function insertMetrics( oChunks, oEvt, begin ) {
 			chunk = parseInt((oEvt.timestamp-begin)/1000/60/60/arrChunks[j]);
 			if(!oChunks[mtrc][oEvt.category][arrChunks[j]][oEvt.file][chunk]) {
 				oChunks[mtrc][oEvt.category][arrChunks[j]][oEvt.file][chunk] = {
-					timestamp: (chunk + arrChunks[j] / 2) * 60 * 60 * 1000 * arrChunks[j],
+					timestamp: (chunk + 0.5) * arrChunks[j],
 					sumMem: oGetMetric[mtrc](oEvt),
 					numChunks: 1
 				};
