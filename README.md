@@ -32,6 +32,7 @@ Create a module (you want to monitor) in the `modules` folder, which has a prope
     - chunk sizes: `[0.25, 0.5, 1, 3, 6, 12, 24]` hours of averaged data
     - metric: `['rss', 'heapTotal', 'heapUsed', 'diffRSSAndTotal']`, refer to the returned values of  [NodeJS's process.memoryUsage()](https://nodejs.org/api/process.html#process_process_memoryusage)
 
+4. Access the webpage on [http://localhost:9876](http://localhost:9876) to see the graph of your measurements. Or change the port to whatever you used.
 
 ## Example output
 
