@@ -33,7 +33,7 @@ function request( url, cb ) {
 		res.on('data', function(chunk) { chunks.push(chunk) });
 		res.on('end', function() { cb(null, null, chunks.join('')) });
 	}).on('error', function(err){
-		console.error('ERROR REQUESTING: ' + url + ' (' + new Date() + ')');
+		console.error('ERROR('+__filename+') REQUESTING: ' + url + ' (' + new Date() + ')');
 		console.error(err);
 	});
 }

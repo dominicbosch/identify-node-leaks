@@ -27,7 +27,7 @@ function requestArticleUrlForComments( art, com, treepath ) {
 	request( urlToRequest, function( err, resp, html ) {
 		var tree, j, len, parId, currLI, currDate, dt, id, idFirstPart, listItem;
 		if(err) {
-			console.error('ERROR REQUESTING: ' + urlToRequest + ' (' + new Date() + ')');
+			console.error('ERROR('+__filename+') REQUESTING: ' + urlToRequest + ' (' + new Date() + ')');
 			console.error(err);
 		} else {
 			tree = cheerio.load( html );
@@ -95,7 +95,7 @@ function getTalkbackID( articlehref, url3 ) {
 		request( articlehref, function( err, resp, html ) {
 			var commenturl, datatalkbackid, tree;
 			if(err) {
-				console.error('ERROR REQUESTING: ' + articlehref + ' (' + new Date() + ')');
+				console.error('ERROR('+__filename+') REQUESTING: ' + articlehref + ' (' + new Date() + ')');
 				console.error(err);
 			} else {
 				tree = cheerio.load( html );
@@ -134,7 +134,7 @@ function get20MinCommentsV3( url ) {
 	request( url, function( err, resp, html ) {
 		var hrefelement, tree;
 		if(err) {
-			console.error('ERROR REQUESTING: ' + url + ' (' + new Date() + ')');
+			console.error('ERROR('+__filename+') REQUESTING: ' + url + ' (' + new Date() + ')');
 			console.error(err);
 		} else {
 			tree = cheerio.load( html );

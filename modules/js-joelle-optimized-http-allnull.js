@@ -34,7 +34,7 @@ function request( url, cb ) {
 			cb = body = null;
 		});
 	}).on( 'error', function(err) {
-		 console.error( 'ERROR REQUESTING: ' + url + ' (' + new Date() + ')');
+		 console.error('ERROR('+__filename+') REQUESTING: ' + url + ' (' + new Date() + ')');
 		 console.error(err);
 	});
 	url = null;
