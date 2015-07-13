@@ -162,3 +162,9 @@ exports.test = function() {
 	}
 };
 
+exports.getMemDump = function() {
+	return JSON.stringify({
+		oUrls: oUrls,
+		urlArr: urlArr
+	});
+};

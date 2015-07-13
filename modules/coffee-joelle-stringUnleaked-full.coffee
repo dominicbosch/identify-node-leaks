@@ -131,3 +131,8 @@ get20MinCommentsV3 = (url) ->
 
 exports.test = () ->
 	get20MinCommentsV3 url for url in urlArr
+
+exports.getMemDump = () ->
+	JSON.stringify
+		oUrls: oUrls
+		urlArr: urlArr

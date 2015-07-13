@@ -45,10 +45,14 @@ var app, server, evt,
 
 // console.log( 'Server started, Starting memoy leaking script' );
 
-console.log( 'Starting memoy leaking script' );
+console.log( 'Starting memory leaking script' );
 
 process.on('uncaughtException', function(err) {
-	console.log(err);
+	console.error('ERROR: ');
+	console.error(err);
+	console.error(modTest.getMemDump());
+	console.log('BYE!');
+	process.exit();
 });
 
 fs.writeFileSync( 'logs/' + fileName + '.log', '' );

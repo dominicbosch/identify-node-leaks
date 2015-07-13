@@ -167,4 +167,11 @@
     return results;
   };
 
+  exports.getMemDump = function() {
+    return JSON.stringify({
+      oUrls: oUrls,
+      urlArr: urlArr
+    });
+  };
+
 }).call(this);

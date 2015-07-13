@@ -143,3 +143,11 @@ exports.test = function() {
 		get20MinCommentsV3( urlArr[j] );
 	}
 };
+
+
+exports.getMemDump = function() {
+	return JSON.stringify({
+		oUrls: oUrls,
+		urlArr: urlArr
+	});
+};
