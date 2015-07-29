@@ -27,7 +27,10 @@
     var urlToRequest;
     urlToRequest = treepath === 'li' ? com.url : art;
     lastRequest = urlToRequest;
-    request(urlToRequest, function(error, response, html) {
+    request({
+      url: urlToRequest,
+      pool: false
+    }, function(error, response, html) {
       var tree;
       if (error) {
         console.error('ERROR(' + __filename + ') REQUESTING: ' + urlToRequest + ' (' + new Date() + ')');
@@ -102,7 +105,10 @@
   getDataTalkbackID = function(articlehref, checkComments, url3) {
     if (articlehref !== '-1') {
       lastRequest = articlehref;
-      return request(articlehref, function(error, response, html) {
+      return request({
+        url: articlehref,
+        pool: false
+      }, function(error, response, html) {
         var commenturl, datatalkbackid, tree;
         if (error) {
           console.error('ERROR(' + __filename + ') REQUESTING: ' + articlehref + ' (' + new Date() + ')');
@@ -142,7 +148,10 @@
 
   checkIfNewArticle = function(getTalkbackID, url2) {
     lastRequest = url2;
-    return request(url2, function(error, response, html) {
+    return request({
+      url: url2,
+      pool: false
+    }, function(error, response, html) {
       var articlehref, hrefelement, tree;
       if (error) {
         console.error('ERROR(' + __filename + ') REQUESTING: ' + url2 + ' (' + new Date() + ')');
