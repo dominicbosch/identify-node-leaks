@@ -49,8 +49,9 @@
 
 				// x.addOrderRule("Date");
 				// x = chart.addTimeAxis( 'x', 'timestamp' );
-				// x = chart.addMeasureAxis( 'x', 'timestamp' );
-				x = chart.addCategoryAxis( 'x', 'timestamp' );
+				x = chart.addMeasureAxis( 'x', 'timestamp' );
+				// x = chart.addCategoryAxis( 'x', 'timestamp' );
+				x.ticks = 10;
 				// x.tickFormat = '%b %e %H:%M';
 				// x.tickFormat = '%j days';
 				// if(oSel.chunk > 3) x.tickFormat = '%e days';
@@ -61,13 +62,15 @@
 				// chart.addColorAxis( 'rss', ["green", "yellow", "red"] );
 				y.title = 'Memory';
 				// s = chart.addSeries( 'filename', dimple.plot.histogram );
-				s = chart.addSeries( 'filename', dimple.plot.line );
+				// s = chart.addSeries( 'filename', dimple.plot.line, x,y );
+				s = chart.addSeries( ['timestamp', 'filename'], dimple.plot.line );
+				// chart.series.push(new dimple.series(chart, ["filename"], x, y, null, null, dimple.plot.line,  false));
 				// s.interpolation = 'step';
 				// s.aggregate = dimple.aggregateMethod.avg;
 				chart.addLegend( 150, 40, 200, 300, 'right', s );
 				// chart.ease = 'elastic';
-			} else {
-				chart.data = arrData;
+			// } else {
+			// 	chart.data = arrData;
 				// svg = dimple.newSvg( '#chartContainer', '100%', '100%' );
 				// chart = new dimple.chart( svg, arrData );
 				// // chart.setBounds( 60, 30, 505, 305 );
