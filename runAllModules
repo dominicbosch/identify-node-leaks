@@ -1,7 +1,9 @@
 #!/bin/bash
 rm logs/*
 rm outputs/*
+date > benchmarkstart.log
 nodejs --max-old-space-size=10000 index.js coffee-joelle-allnull.js 60 > outputs/coffee-joelle-allnull.log 2>&1 &
+nodejs --max-old-space-size=10000 index.js coffee-joelle-nonull.js 60 > outputs/coffee-joelle-nonull.log 2>&1 &
 nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-full.js 60 > outputs/coffee-joelle-stringUnleaked-full.log 2>&1 &
 nodejs --max-old-space-size=10000 index.js coffee-joelle-stringUnleaked-onlyCommentId.js 60 > outputs/coffee-joelle-stringUnleaked-onlyCommentId.log 2>&1 &
 nodejs --max-old-space-size=10000 index.js js-joelle-further-optimized-http-allnull.js 60 > outputs/js-joelle-further-optimized-http-allnull.log 2>&1 &

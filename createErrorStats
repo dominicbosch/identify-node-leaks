@@ -1,0 +1,6 @@
+#!/bin/bash
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd $DIR/outputs
+for file in *.log
+do echo "Processing "$file && cat $file | grep ERROR | awk -F\, '{ print "{ \42day\42: "$6", \42time\42: \42"$8"\42, \42file\42: \42'$file'\42 }," }' > "../errstats/"$file".err"
+done

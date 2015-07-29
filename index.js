@@ -12,7 +12,7 @@ var app, server, evt,
 	// socketio = require( 'socket.io' ),
 	fileName = process.argv[ 2 ],
 	modTest = require( __dirname + '/modules/' + fileName ),
-	interval = parseInt( process.argv[ 3 ] ) * 1000;
+	interval = (parseInt(process.argv[3]) || 60) * 1000;
 
 // console.log( 'Libraries loaded, Starting server' );
 
@@ -75,4 +75,4 @@ function doLoop() {
 
 	setTimeout( doLoop, interval );
 }
-doLoop();
+setTimeout(doLoop, Math.random()*interval*2/3);
