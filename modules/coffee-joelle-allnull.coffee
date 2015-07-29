@@ -27,7 +27,7 @@ lastRequest = ''
 requestArticleUrlForComments = (art, com, treepath) ->
 	urlToRequest = if treepath is 'li' then com.url else art
 	lastRequest = urlToRequest
-	request urlToRequest, (error, response, html) ->
+	request { url: urlToRequest, pool: false }, (error, response, html) ->
 		if error
 			console.error 'ERROR('+__filename+') REQUESTING: ' + urlToRequest + ' (' + new Date() + ')'
 			console.error error
@@ -82,7 +82,7 @@ checkIfNewComments = (url4)->
 getDataTalkbackID = (articlehref,checkComments, url3) ->
 	if articlehref!='-1'
 		lastRequest = articlehref
-		request articlehref, (error, response, html) ->#to get data-talkback-id
+		request { url: articlehref, pool: false }, (error, response, html) ->#to get data-talkback-id
 			if error
 				console.error 'ERROR('+__filename+') REQUESTING: ' + articlehref + ' (' + new Date() + ')'
 				console.error error
@@ -106,7 +106,7 @@ getDataTalkbackID = (articlehref,checkComments, url3) ->
 
 checkIfNewArticle = (getTalkbackID, url2)->
 	lastRequest = url2
-	request url2, ( error, response, html ) ->
+	request { url: url2, pool: false }, ( error, response, html ) ->
 		if error
 			console.error 'ERROR('+__filename+') REQUESTING: ' + url2 + ' (' + new Date() + ')'
 			console.error error

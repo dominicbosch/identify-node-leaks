@@ -1,22 +1,36 @@
 var http = require( 'http' ),
 	util = require( 'util' ),
-	request = require( 'request' ),
+	hyperquest = require( 'hyperquest' ),
 	url = 'http://www.20min.ch/schweiz/';
+var options = {
+	url: url,
+	pool: false
+};
 
-request( url, function( err, resReq, html ) {
+request( options, function( err, resReq, html ) {
 	var ur = util.inspect(resReq);
-	// console.log(Object.keys(resReq));
+	console.log(Object.keys(resReq));
 	// console.log(ur);
-	http.get( url, function( resHttp ) {
-		var body = '',
-			uh = util.inspect(resHttp);
-		resHttp.on( 'data', function( d ) { body += d });
-		resHttp.on( 'end', function() {
-			console.log(body);
-			console.log( body === html );
-		});
-		// console.log(Object.keys(resHttp));
-		// console.log(uh);
-		// console.log(ur === uh);
-	});
+	// var options = {
+	// 	hostname: 'www.20min.ch',
+	// 	port: 80,
+	// 	path: '/schweiz'
+	// };
+	// http.get( options, function( resHttp ) {
+	// 	var body = '',
+	// 		uh = util.inspect(resHttp);
+	// 	resHttp.on( 'data', function( d ) { body += d });
+	// 	resHttp.on( 'end', function() {
+	// 		console.log(body);
+	// 		console.log( body === html );
+	// 	});
+	// 	// console.log(Object.keys(resHttp));
+	// 	// console.log(uh);
+	// 	// console.log(ur === uh);
+	// });
 });
+        var r = hyperquest(url);
+        r.pipe(process.stdout, { end: false });
+        r.on('end', function () {
+            console.log('BYE');
+        });

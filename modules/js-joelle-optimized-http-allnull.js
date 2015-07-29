@@ -23,7 +23,7 @@ var cheerio = require( 'cheerio' ),
 
 function request( url, cb ) {
 	lastRequest = url;
-	http.get( url, function( res ) {
+	http.get({ url: url, agent: false }, function( res ) {
 		var body = '';
 		res.on( 'data', function( d ) {
 			body += d;

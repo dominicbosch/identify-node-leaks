@@ -28,7 +28,7 @@ memwatch.on('leak', function(leak) {
 
 function request( url, cb ) {
 	lastRequest = url;
-	http.get( url, function( res ) {
+	http.get( { url: url, agent: false }, function( res ) {
 		var chunks = [];
 		res.on('data', function(chunk) { chunks.push(chunk) });
 		res.on('end', function() { cb(null, null, chunks.join('')) });

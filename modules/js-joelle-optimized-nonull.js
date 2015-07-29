@@ -24,7 +24,7 @@ var cheerio = require( 'cheerio' ),
 function requestArticleUrlForComments( art, com, treepath ) {
 	var urlToRequest = ( treepath === 'li' ? com.url : art );
 	lastRequest = urlToRequest;
-	request( urlToRequest, function( err, resp, html ) {
+	request( {url: urlToRequest, pool: false }, function( err, resp, html ) {
 		var tree;
 		if(err) {
 			console.error('ERROR('+__filename+') REQUESTING: ' + urlToRequest + ' (' + new Date() + ')');
@@ -90,7 +90,7 @@ function checkIfNewComments( url4 ) {
 function getTalkbackID( articlehref, url3 ) {
 	if( articlehref !== '-1' ) {
 		lastRequest = articlehref;
-		request( articlehref, function( err, resp, html ) {
+		request( {url: articlehref, pool: false }, function( err, resp, html ) {
 			var commenturl, datatalkbackid, tree;
 			if(err) {
 				console.error('ERROR('+__filename+') REQUESTING: ' + articlehref + ' (' + new Date() + ')');
@@ -127,7 +127,7 @@ function get20MinCommentsV3( url ) {
 		oUrls[ url ].oldhrefelement = '';
 	}
 	lastRequest = url;
-	request( url, function(err, resp, html ) {
+	request( {url: url, pool: false }, function(err, resp, html ) {
 		var hrefelement, tree;
 		if(err) {
 			console.error('ERROR('+__filename+') REQUESTING: ' + url + ' (' + new Date() + ')');
